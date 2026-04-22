@@ -6,7 +6,8 @@
 - ✅ Phase 3 baseline implemented: post draft generation + image draft generation via decoupled modules.
 - ✅ Phase 4 backend baseline implemented: draft listing + approval APIs and published artifact storage.
 - ✅ Phase 5 backend baseline implemented: feedback capture API + feedback service scoring hook.
-- 🔜 Next step: Next.js review UI with approve/edit flow wired to the new APIs.
+- ✅ Next.js review UI baseline implemented: run pipeline, review/edit, approve, feedback submit.
+- 🔜 Next step: replace static sources and placeholder adapters (OpenAI + Chroma) with production implementations.
 
 ---
 

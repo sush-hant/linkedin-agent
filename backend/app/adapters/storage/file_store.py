@@ -56,6 +56,13 @@ class JsonFileStore(StoragePort):
         payload = json.loads(latest.read_text(encoding="utf-8"))
         return [PostDraft.model_validate(item) for item in payload]
 
+    def read_latest_image_drafts(self) -> list[ImageDraft]:
+        latest = self._latest_json("drafts/images")
+        if not latest:
+            return []
+        payload = json.loads(latest.read_text(encoding="utf-8"))
+        return [ImageDraft.model_validate(item) for item in payload]
+
     def save_published_post(self, post: PublishedPost) -> str:
         return self._write("published", post.model_dump())
 

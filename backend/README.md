@@ -11,6 +11,7 @@ python run.py
 - `GET /config`
 - `POST /pipeline/run`
 - `GET /review/drafts`
+- `GET /review/images`
 - `POST /review/approve`
 - `POST /feedback/record`
 

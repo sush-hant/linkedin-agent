@@ -34,6 +34,10 @@ class ApiTests(unittest.TestCase):
             payload = drafts.json()
             self.assertGreater(len(payload), 0)
 
+            images = client.get("/review/images")
+            self.assertEqual(images.status_code, 200)
+            self.assertGreater(len(images.json()), 0)
+
             draft_id = payload[0]["draft_id"]
             approve = client.post("/review/approve", json={"draft_id": draft_id})
             self.assertEqual(approve.status_code, 200)

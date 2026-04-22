@@ -30,9 +30,15 @@ class ReviewFeedbackTests(unittest.TestCase):
             drafts = PostGenerator(FilePromptProvider(__import__("pathlib").Path("app/prompts"))).run([trend], 1)
             store.save_post_drafts(drafts)
 
+            from app.modules.image_generator import ImageGenerator
+            images = ImageGenerator().run(drafts)
+            store.save_image_drafts(images)
+
             review = ReviewService(store)
             listed = review.list_drafts()
+            listed_images = review.list_images()
             self.assertGreater(len(listed), 0)
+            self.assertGreater(len(listed_images), 0)
 
             published = review.approve(ApprovalRequest(draft_id=listed[0].draft_id))
             self.assertEqual(published.draft_id, listed[0].draft_id)

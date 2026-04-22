@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from hashlib import sha256
 
 from app.ports.interfaces import StoragePort
-from app.shared.schemas import ApprovalRequest, PostDraft, PublishedPost
+from app.shared.schemas import ApprovalRequest, ImageDraft, PostDraft, PublishedPost
 
 
 @dataclass
@@ -12,6 +12,9 @@ class ReviewService:
 
     def list_drafts(self) -> list[PostDraft]:
         return self.store.read_latest_post_drafts()
+
+    def list_images(self) -> list[ImageDraft]:
+        return self.store.read_latest_image_drafts()
 
     def approve(self, request: ApprovalRequest) -> PublishedPost:
         drafts = self.store.read_latest_post_drafts()

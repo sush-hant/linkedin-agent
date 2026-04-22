@@ -1,3 +1,4 @@
+from pathlib import Path
 from dataclasses import dataclass
 from app.adapters.source.static_client import StaticSourceClient
 from app.adapters.storage.file_store import JsonFileStore

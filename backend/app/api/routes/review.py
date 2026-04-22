@@ -18,6 +18,12 @@ def list_drafts() -> list[dict]:
     return [d.model_dump() for d in drafts]
 
 
+@router.get("/images")
+def list_images() -> list[dict]:
+    images = _service().list_images()
+    return [d.model_dump() for d in images]
+
+
 @router.post("/approve")
 def approve_draft(request: ApprovalRequest) -> dict:
     try:

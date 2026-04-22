@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Protocol
 
 from app.shared.schemas import (
-    ApprovalRequest,
     FeedbackEntry,
     ImageDraft,
     NormalizedItem,
@@ -36,6 +35,10 @@ class StoragePort(ABC):
 
     @abstractmethod
     def read_latest_post_drafts(self) -> list[PostDraft]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def read_latest_image_drafts(self) -> list[ImageDraft]:
         raise NotImplementedError
 
     @abstractmethod
