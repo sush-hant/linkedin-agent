@@ -1,10 +1,24 @@
 from abc import ABC, abstractmethod
 from typing import Protocol
 
-from app.shared.schemas import ImageDraft, PostDraft, TrendCandidate
+from app.shared.schemas import (
+    ImageDraft,
+    NormalizedItem,
+    PostDraft,
+    SourceItem,
+    TrendCandidate,
+)
 
 
 class StoragePort(ABC):
+    @abstractmethod
+    def save_raw_items(self, items: list[SourceItem]) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def save_normalized_items(self, items: list[NormalizedItem]) -> str:
+        raise NotImplementedError
+
     @abstractmethod
     def save_trend_candidates(self, items: list[TrendCandidate]) -> str:
         raise NotImplementedError
@@ -22,6 +36,11 @@ class VectorStorePort(ABC):
     @abstractmethod
     def upsert_topics(self, items: list[TrendCandidate]) -> None:
         raise NotImplementedError
+
+
+class SourceClientPort(Protocol):
+    def fetch(self) -> list[SourceItem]:
+        ...
 
 
 class PromptProviderPort(Protocol):

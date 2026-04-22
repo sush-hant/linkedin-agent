@@ -3,6 +3,26 @@ from datetime import datetime
 from pydantic import BaseModel, Field, HttpUrl
 
 
+class SourceItem(BaseModel):
+    source: str
+    title: str
+    url: HttpUrl
+    summary: str
+    published_at: datetime
+    fetched_at: datetime
+
+
+class NormalizedItem(BaseModel):
+    item_id: str
+    source: str
+    title: str
+    url: HttpUrl
+    summary: str
+    published_at: datetime
+    fetched_at: datetime
+    topic_hint: str
+
+
 class TrendCandidate(BaseModel):
     topic_id: str = Field(..., description="Stable topic identifier")
     title: str

@@ -1,8 +1,10 @@
 # LinkedIn AI Trend Agent — Phase-wise, Decoupled Architecture Plan
 
 ## Implementation Status
-- ✅ Phase 1 scaffold started in codebase (FastAPI skeleton, contracts, adapters, orchestrator, prompt registry).
-- 🔜 Next step: implement Phase 2 ingestion + ranking modules behind existing interfaces.
+- ✅ Phase 1 implemented: FastAPI scaffold, contracts, adapters, prompt registry.
+- ✅ Phase 2 baseline implemented: static source fetcher, normalize/dedupe, trend ranking.
+- ✅ Phase 3 baseline implemented: post draft generation + image draft generation via decoupled modules.
+- 🔜 Next step: Phase 4 review UI and approval workflow in Next.js.
 
 ---
 

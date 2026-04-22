@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from app.ports.interfaces import StoragePort
-from app.shared.schemas import ImageDraft, PostDraft, TrendCandidate
+from app.shared.schemas import ImageDraft, NormalizedItem, PostDraft, SourceItem, TrendCandidate
 
 
 @dataclass
@@ -18,6 +18,12 @@ class JsonFileStore(StoragePort):
         file_path = target_dir / f"{timestamp}.json"
         file_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
         return str(file_path)
+
+    def save_raw_items(self, items: list[SourceItem]) -> str:
+        return self._write("raw", [item.model_dump() for item in items])
+
+    def save_normalized_items(self, items: list[NormalizedItem]) -> str:
+        return self._write("normalized", [item.model_dump() for item in items])
 
     def save_trend_candidates(self, items: list[TrendCandidate]) -> str:
         return self._write("trends", [item.model_dump() for item in items])
