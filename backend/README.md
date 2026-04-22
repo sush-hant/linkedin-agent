@@ -1,4 +1,4 @@
-# Backend (Phase 1-8 baseline)
+# Backend (Phase 1-9 baseline)
 
 ## Run API locally
 ```bash
@@ -24,6 +24,7 @@ python run.py
 - Phase 6: RSS-based source ingestion (with static fallback for resilience)
 - Phase 7: OpenAI-backed post generation adapter (with graceful fallback)
 - Phase 8: Chroma adapter with deterministic embedding + query support
+- Phase 9: Retrieval-aware generation using vector related-topic context
 
 ## Run tests
 ```bash
@@ -42,3 +43,5 @@ python -m unittest discover -s tests -v
 ## LLM configuration
 - Set `OPENAI_API_KEY` (and optional `OPENAI_MODEL`) to enable real post generation.
 - Without API key, pipeline uses deterministic fallback post drafting.
+
+- Optional `OPENAI_EMBEDDING_MODEL` controls Chroma embedding calls when API key is available.

@@ -29,7 +29,11 @@ class PipelineResult:
 class PipelineOrchestrator:
     def __init__(self) -> None:
         self.store = JsonFileStore(settings.storage_path)
-        self.vector_store = ChromaVectorStore(settings.chroma_path)
+        self.vector_store = ChromaVectorStore(
+            settings.chroma_path,
+            openai_api_key=settings.openai_api_key,
+            embedding_model=settings.openai_embedding_model,
+        )
 
         rss_clients = [
             RSSSourceClient(feed_url=url, source_name=f"rss:{idx}")
@@ -48,7 +52,14 @@ class PipelineOrchestrator:
         raw_items = self.fetcher.run()
         normalized_items = self.normalizer.run(raw_items)
         trends = self.ranker.run(normalized_items)
-        posts = self.post_generator.run(trends)
+
+        self.vector_store.upsert_topics(trends)
+        related_topics = {
+            trend.topic_id: self.vector_store.query_related(f"{trend.title}\n{trend.summary}", limit=3)
+            for trend in trends
+        }
+
+        posts = self.post_generator.run(trends, related_topics=related_topics)
         images = self.image_generator.run(posts)
 
         self.store.save_raw_items(raw_items)
@@ -56,11 +67,10 @@ class PipelineOrchestrator:
         self.store.save_trend_candidates(trends)
         self.store.save_post_drafts(posts)
         self.store.save_image_drafts(images)
-        self.vector_store.upsert_topics(trends)
 
         return PipelineResult(
             status="ok",
-            detail="Pipeline completed with RSS ingestion + OpenAI-capable generation.",
+            detail="Pipeline completed with retrieval-aware generation.",
             raw_count=len(raw_items),
             normalized_count=len(normalized_items),
             trend_count=len(trends),

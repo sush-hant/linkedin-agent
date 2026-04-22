@@ -16,8 +16,12 @@ if PYDANTIC_AVAILABLE:
 
 
 class _FakeLLM:
+    def __init__(self) -> None:
+        self.last_user_prompt = ""
+
     def generate_post(self, system_prompt: str, user_prompt: str) -> str:
         _ = system_prompt
+        self.last_user_prompt = user_prompt
         return f"LLM_OUTPUT::{user_prompt[:30]}"
 
 
@@ -72,9 +76,15 @@ class ModuleTests(unittest.TestCase):
             generated_at=now,
         )
         provider = FilePromptProvider(Path("app/prompts"))
-        drafts = PostGenerator(provider, llm_client=_FakeLLM()).run([trend], max_topics=1)
+        fake_llm = _FakeLLM()
+        drafts = PostGenerator(provider, llm_client=fake_llm).run(
+            [trend],
+            max_topics=1,
+            related_topics={"t1": ["a1", "a2"]},
+        )
         self.assertEqual(len(drafts), 3)
         self.assertTrue(drafts[0].content.startswith("LLM_OUTPUT::"))
+        self.assertIn("Related trend ids: a1, a2", fake_llm.last_user_prompt)
 
         images = ImageGenerator().run(drafts)
         self.assertEqual(len(images), 3)

@@ -12,6 +12,7 @@ class Settings(BaseModel):
     chroma_path: str = "chroma"
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
     openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    openai_embedding_model: str = os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
     rss_feeds: list[str] = [
         "https://feeds.feedburner.com/venturebeat/SZYF",
         "https://techcrunch.com/category/artificial-intelligence/feed/",

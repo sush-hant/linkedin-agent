@@ -10,7 +10,8 @@
 - ✅ RSS source ingestion baseline implemented (with static source fallback).
 - ✅ OpenAI-capable generation baseline implemented (with deterministic fallback when key is absent).
 - ✅ Chroma adapter baseline implemented (persistent collection, upsert, query, deterministic embeddings).
-- 🔜 Next step: replace deterministic local embedding with model-quality embeddings and use retrieval in ranker/post generation.
+- ✅ Retrieval-aware generation baseline implemented (related-topic context from vector search is injected into post generation).
+- 🔜 Next step: use vector retrieval signals directly inside ranking/novelty scoring and upgrade evaluation.
 
 ---
 

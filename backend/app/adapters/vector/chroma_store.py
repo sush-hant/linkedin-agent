@@ -1,5 +1,8 @@
 import hashlib
+import json
+import os
 from dataclasses import dataclass
+from urllib import request
 
 from app.ports.interfaces import VectorStorePort
 from app.shared.schemas import TrendCandidate
@@ -9,6 +12,8 @@ from app.shared.schemas import TrendCandidate
 class ChromaVectorStore(VectorStorePort):
     persist_directory: str
     collection_name: str = "trend_topics"
+    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
+    embedding_model: str = os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
 
     def __post_init__(self) -> None:
         self.available = False
@@ -23,7 +28,7 @@ class ChromaVectorStore(VectorStorePort):
             # Keep pipeline functional even if chromadb dependency/runtime is unavailable.
             self.available = False
 
-    def _embed_text(self, text: str, dim: int = 64) -> list[float]:
+    def _deterministic_embed(self, text: str, dim: int = 64) -> list[float]:
         digest = hashlib.sha256(text.encode("utf-8")).digest()
         values = list(digest)
         vector = []
@@ -33,6 +38,32 @@ class ChromaVectorStore(VectorStorePort):
                 if len(vector) == dim:
                     break
         return vector
+
+    def _openai_embed(self, text: str) -> list[float]:
+        payload = {
+            "model": self.embedding_model,
+            "input": text,
+        }
+        req = request.Request(
+            url="https://api.openai.com/v1/embeddings",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {self.openai_api_key}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        with request.urlopen(req, timeout=30) as resp:  # noqa: S310
+            body = json.loads(resp.read().decode("utf-8"))
+        return body["data"][0]["embedding"]
+
+    def _embed_text(self, text: str, dim: int = 64) -> list[float]:
+        if self.openai_api_key:
+            try:
+                return self._openai_embed(text)
+            except Exception:
+                pass
+        return self._deterministic_embed(text, dim)
 
     def upsert_topics(self, items: list[TrendCandidate]) -> None:
         if not self.available or not self.collection or not items:
