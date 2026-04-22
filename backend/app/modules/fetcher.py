@@ -11,5 +11,9 @@ class SourceFetcher:
     def run(self) -> list[SourceItem]:
         items: list[SourceItem] = []
         for client in self.clients:
-            items.extend(client.fetch())
+            try:
+                items.extend(client.fetch())
+            except Exception:
+                # keep pipeline resilient: failed source should not block successful sources
+                continue
         return items

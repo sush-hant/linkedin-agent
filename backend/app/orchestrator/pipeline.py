@@ -1,5 +1,7 @@
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
+
+from app.adapters.source.rss_client import RSSSourceClient
 from app.adapters.source.static_client import StaticSourceClient
 from app.adapters.storage.file_store import JsonFileStore
 from app.adapters.vector.chroma_store import ChromaVectorStore
@@ -27,7 +29,13 @@ class PipelineOrchestrator:
     def __init__(self) -> None:
         self.store = JsonFileStore(settings.storage_path)
         self.vector_store = ChromaVectorStore(settings.chroma_path)
-        self.fetcher = SourceFetcher(clients=[StaticSourceClient()])
+
+        rss_clients = [
+            RSSSourceClient(feed_url=url, source_name=f"rss:{idx}")
+            for idx, url in enumerate(settings.rss_feeds, start=1)
+        ]
+        self.fetcher = SourceFetcher(clients=[*rss_clients, StaticSourceClient()])
+
         self.normalizer = NormalizerDeduper()
         self.ranker = TrendRanker(audience_keywords=["agent", "ai", "llm", "automation"])
         self.post_generator = PostGenerator(FilePromptProvider(Path("app/prompts")))
@@ -49,7 +57,7 @@ class PipelineOrchestrator:
 
         return PipelineResult(
             status="ok",
-            detail="Phase 2+3 baseline pipeline completed.",
+            detail="Pipeline completed with RSS ingestion + baseline generation.",
             raw_count=len(raw_items),
             normalized_count=len(normalized_items),
             trend_count=len(trends),

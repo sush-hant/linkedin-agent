@@ -7,7 +7,8 @@
 - ✅ Phase 4 backend baseline implemented: draft listing + approval APIs and published artifact storage.
 - ✅ Phase 5 backend baseline implemented: feedback capture API + feedback service scoring hook.
 - ✅ Next.js review UI baseline implemented: run pipeline, review/edit, approve, feedback submit.
-- 🔜 Next step: replace static sources and placeholder adapters (OpenAI + Chroma) with production implementations.
+- ✅ RSS source ingestion baseline implemented (with static source fallback).
+- 🔜 Next step: replace placeholder generation/vector adapters with real OpenAI + Chroma implementations.
 
 ---
 

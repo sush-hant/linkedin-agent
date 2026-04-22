@@ -21,6 +21,7 @@ python run.py
 - Phase 3: post draft generation + image draft generation
 - Phase 4: review/approval endpoints and published artifact storage
 - Phase 5: feedback capture endpoint + scoring hook service
+- Phase 6: RSS-based source ingestion (with static fallback for resilience)
 
 ## Run tests
 ```bash
@@ -31,3 +32,7 @@ python -m unittest discover -s tests -v
 ## Notes
 - Prompt templates are file-based under `app/prompts/` and loaded by `FilePromptProvider`.
 - Cron entrypoint is `scripts/run_pipeline.sh`.
+
+
+## Source configuration
+- RSS feed URLs are configured in `app/shared/config.py` via `settings.rss_feeds`.
