@@ -1,4 +1,4 @@
-# Backend (Phase 1-9 baseline)
+# Backend (Phase 1-10 baseline)
 
 ## Run API locally
 ```bash
@@ -25,6 +25,7 @@ python run.py
 - Phase 7: OpenAI-backed post generation adapter (with graceful fallback)
 - Phase 8: Chroma adapter with deterministic embedding + query support
 - Phase 9: Retrieval-aware generation using vector related-topic context
+- Phase 10: Retrieval-aware ranking with novelty scoring from vector search
 
 ## Run tests
 ```bash

@@ -62,8 +62,13 @@ class ModuleTests(unittest.TestCase):
             ),
         ]
         normalized = NormalizerDeduper().run(source_items)
-        ranked = TrendRanker(audience_keywords=["ai", "agent"]).run(normalized)
+        ranker = TrendRanker(audience_keywords=["ai", "agent"])
+        ranked = ranker.run(normalized)
         self.assertGreaterEqual(ranked[0].trend_score, ranked[1].trend_score)
+
+        # novelty impact: many related ids should reduce score
+        low_novelty = ranker.run(normalized, related_lookup=lambda _text: ["x1", "x2", "x3", "x4", "x5"])
+        self.assertLessEqual(low_novelty[0].trend_score, ranked[0].trend_score)
 
     def test_post_and_image_generators(self) -> None:
         now = datetime.now(timezone.utc)

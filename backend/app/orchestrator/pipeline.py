@@ -51,7 +51,11 @@ class PipelineOrchestrator:
     def run(self) -> PipelineResult:
         raw_items = self.fetcher.run()
         normalized_items = self.normalizer.run(raw_items)
-        trends = self.ranker.run(normalized_items)
+
+        trends = self.ranker.run(
+            normalized_items,
+            related_lookup=lambda text: self.vector_store.query_related(text, limit=3),
+        )
 
         self.vector_store.upsert_topics(trends)
         related_topics = {
@@ -70,7 +74,7 @@ class PipelineOrchestrator:
 
         return PipelineResult(
             status="ok",
-            detail="Pipeline completed with retrieval-aware generation.",
+            detail="Pipeline completed with retrieval-aware ranking and generation.",
             raw_count=len(raw_items),
             normalized_count=len(normalized_items),
             trend_count=len(trends),
