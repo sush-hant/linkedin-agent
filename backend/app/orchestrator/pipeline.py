@@ -1,0 +1,83 @@
+from dataclasses import dataclass
+from pathlib import Path
+
+from app.adapters.llm.openai_client import OpenAIClient
+from app.adapters.source.rss_client import RSSSourceClient
+from app.adapters.source.static_client import StaticSourceClient
+from app.adapters.storage.file_store import JsonFileStore
+from app.adapters.vector.chroma_store import ChromaVectorStore
+from app.modules.fetcher import SourceFetcher
+from app.modules.image_generator import ImageGenerator
+from app.modules.normalizer import NormalizerDeduper
+from app.modules.post_generator import PostGenerator
+from app.modules.ranker import TrendRanker
+from app.prompts.registry import FilePromptProvider
+from app.shared.config import settings
+
+
+@dataclass
+class PipelineResult:
+    status: str
+    detail: str
+    raw_count: int
+    normalized_count: int
+    trend_count: int
+    post_count: int
+    image_count: int
+
+
+class PipelineOrchestrator:
+    def __init__(self) -> None:
+        self.store = JsonFileStore(settings.storage_path)
+        self.vector_store = ChromaVectorStore(
+            settings.chroma_path,
+            openai_api_key=settings.openai_api_key,
+            embedding_model=settings.openai_embedding_model,
+        )
+
+        rss_clients = [
+            RSSSourceClient(feed_url=url, source_name=f"rss:{idx}")
+            for idx, url in enumerate(settings.rss_feeds, start=1)
+        ]
+        self.fetcher = SourceFetcher(clients=[*rss_clients, StaticSourceClient()])
+
+        llm_client = OpenAIClient(settings.openai_api_key, settings.openai_model) if settings.openai_api_key else None
+
+        self.normalizer = NormalizerDeduper()
+        self.ranker = TrendRanker(audience_keywords=["agent", "ai", "llm", "automation"])
+        self.post_generator = PostGenerator(FilePromptProvider(Path("app/prompts")), llm_client=llm_client)
+        self.image_generator = ImageGenerator()
+
+    def run(self) -> PipelineResult:
+        raw_items = self.fetcher.run()
+        normalized_items = self.normalizer.run(raw_items)
+
+        trends = self.ranker.run(
+            normalized_items,
+            related_lookup=lambda text: self.vector_store.query_related(text, limit=3),
+        )
+
+        self.vector_store.upsert_topics(trends)
+        related_topics = {
+            trend.topic_id: self.vector_store.query_related(f"{trend.title}\n{trend.summary}", limit=3)
+            for trend in trends
+        }
+
+        posts = self.post_generator.run(trends, related_topics=related_topics)
+        images = self.image_generator.run(posts)
+
+        self.store.save_raw_items(raw_items)
+        self.store.save_normalized_items(normalized_items)
+        self.store.save_trend_candidates(trends)
+        self.store.save_post_drafts(posts)
+        self.store.save_image_drafts(images)
+
+        return PipelineResult(
+            status="ok",
+            detail="Pipeline completed with retrieval-aware ranking and generation.",
+            raw_count=len(raw_items),
+            normalized_count=len(normalized_items),
+            trend_count=len(trends),
+            post_count=len(posts),
+            image_count=len(images),
+        )
