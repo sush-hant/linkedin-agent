@@ -15,6 +15,12 @@ if PYDANTIC_AVAILABLE:
     from app.shared.schemas import SourceItem, TrendCandidate
 
 
+class _FakeLLM:
+    def generate_post(self, system_prompt: str, user_prompt: str) -> str:
+        _ = system_prompt
+        return f"LLM_OUTPUT::{user_prompt[:30]}"
+
+
 @unittest.skipUnless(PYDANTIC_AVAILABLE, "pydantic is required for module tests")
 class ModuleTests(unittest.TestCase):
     def test_normalizer_dedupes_duplicate_title_and_url(self) -> None:
@@ -66,8 +72,9 @@ class ModuleTests(unittest.TestCase):
             generated_at=now,
         )
         provider = FilePromptProvider(Path("app/prompts"))
-        drafts = PostGenerator(provider).run([trend], max_topics=1)
+        drafts = PostGenerator(provider, llm_client=_FakeLLM()).run([trend], max_topics=1)
         self.assertEqual(len(drafts), 3)
+        self.assertTrue(drafts[0].content.startswith("LLM_OUTPUT::"))
 
         images = ImageGenerator().run(drafts)
         self.assertEqual(len(images), 3)

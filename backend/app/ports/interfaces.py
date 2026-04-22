@@ -64,3 +64,8 @@ class SourceClientPort(Protocol):
 class PromptProviderPort(Protocol):
     def get(self, prompt_name: str) -> str:
         ...
+
+
+class LLMClientPort(Protocol):
+    def generate_post(self, system_prompt: str, user_prompt: str) -> str:
+        ...

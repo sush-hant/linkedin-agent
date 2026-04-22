@@ -1,4 +1,4 @@
-# Backend (Phase 1-5 baseline)
+# Backend (Phase 1-7 baseline)
 
 ## Run API locally
 ```bash
@@ -22,6 +22,7 @@ python run.py
 - Phase 4: review/approval endpoints and published artifact storage
 - Phase 5: feedback capture endpoint + scoring hook service
 - Phase 6: RSS-based source ingestion (with static fallback for resilience)
+- Phase 7: OpenAI-backed post generation adapter (with graceful fallback)
 
 ## Run tests
 ```bash
@@ -36,3 +37,7 @@ python -m unittest discover -s tests -v
 
 ## Source configuration
 - RSS feed URLs are configured in `app/shared/config.py` via `settings.rss_feeds`.
+
+## LLM configuration
+- Set `OPENAI_API_KEY` (and optional `OPENAI_MODEL`) to enable real post generation.
+- Without API key, pipeline uses deterministic fallback post drafting.

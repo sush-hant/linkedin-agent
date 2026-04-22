@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+from app.adapters.llm.openai_client import OpenAIClient
 from app.adapters.source.rss_client import RSSSourceClient
 from app.adapters.source.static_client import StaticSourceClient
 from app.adapters.storage.file_store import JsonFileStore
@@ -36,9 +37,11 @@ class PipelineOrchestrator:
         ]
         self.fetcher = SourceFetcher(clients=[*rss_clients, StaticSourceClient()])
 
+        llm_client = OpenAIClient(settings.openai_api_key, settings.openai_model) if settings.openai_api_key else None
+
         self.normalizer = NormalizerDeduper()
         self.ranker = TrendRanker(audience_keywords=["agent", "ai", "llm", "automation"])
-        self.post_generator = PostGenerator(FilePromptProvider(Path("app/prompts")))
+        self.post_generator = PostGenerator(FilePromptProvider(Path("app/prompts")), llm_client=llm_client)
         self.image_generator = ImageGenerator()
 
     def run(self) -> PipelineResult:
@@ -57,7 +60,7 @@ class PipelineOrchestrator:
 
         return PipelineResult(
             status="ok",
-            detail="Pipeline completed with RSS ingestion + baseline generation.",
+            detail="Pipeline completed with RSS ingestion + OpenAI-capable generation.",
             raw_count=len(raw_items),
             normalized_count=len(normalized_items),
             trend_count=len(trends),

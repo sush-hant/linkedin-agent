@@ -8,7 +8,8 @@
 - ✅ Phase 5 backend baseline implemented: feedback capture API + feedback service scoring hook.
 - ✅ Next.js review UI baseline implemented: run pipeline, review/edit, approve, feedback submit.
 - ✅ RSS source ingestion baseline implemented (with static source fallback).
-- 🔜 Next step: replace placeholder generation/vector adapters with real OpenAI + Chroma implementations.
+- ✅ OpenAI-capable generation baseline implemented (with deterministic fallback when key is absent).
+- 🔜 Next step: replace placeholder Chroma adapter with real vector upsert/query implementation.
 
 ---
 
