@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field, HttpUrl
 
@@ -47,3 +48,29 @@ class ImageDraft(BaseModel):
     prompt: str
     file_path: str
     size: str = Field(default="1200x627")
+
+
+class ApprovalRequest(BaseModel):
+    draft_id: str
+    edited_content: str | None = None
+
+
+class PublishedPost(BaseModel):
+    published_id: str
+    draft_id: str
+    topic_id: str
+    content: str
+    hashtags: list[str]
+    citations: list[HttpUrl]
+    approved_at: datetime
+
+
+class FeedbackEntry(BaseModel):
+    published_id: str
+    impressions: int = 0
+    comments: int = 0
+    reposts: int = 0
+    saves: int = 0
+    quality: Literal["poor", "average", "good"]
+    notes: str = ""
+    recorded_at: datetime

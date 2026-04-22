@@ -4,7 +4,9 @@
 - ✅ Phase 1 implemented: FastAPI scaffold, contracts, adapters, prompt registry.
 - ✅ Phase 2 baseline implemented: static source fetcher, normalize/dedupe, trend ranking.
 - ✅ Phase 3 baseline implemented: post draft generation + image draft generation via decoupled modules.
-- 🔜 Next step: Phase 4 review UI and approval workflow in Next.js.
+- ✅ Phase 4 backend baseline implemented: draft listing + approval APIs and published artifact storage.
+- ✅ Phase 5 backend baseline implemented: feedback capture API + feedback service scoring hook.
+- 🔜 Next step: Next.js review UI with approve/edit flow wired to the new APIs.
 
 ---
 

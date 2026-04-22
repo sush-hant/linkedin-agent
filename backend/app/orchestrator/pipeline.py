@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from pathlib import Path
-
 from app.adapters.source.static_client import StaticSourceClient
 from app.adapters.storage.file_store import JsonFileStore
 from app.adapters.vector.chroma_store import ChromaVectorStore
@@ -26,7 +24,7 @@ class PipelineResult:
 
 class PipelineOrchestrator:
     def __init__(self) -> None:
-        self.store = JsonFileStore(Path(settings.storage_root))
+        self.store = JsonFileStore(settings.storage_path)
         self.vector_store = ChromaVectorStore(settings.chroma_path)
         self.fetcher = SourceFetcher(clients=[StaticSourceClient()])
         self.normalizer = NormalizerDeduper()
