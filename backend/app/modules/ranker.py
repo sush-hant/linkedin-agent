@@ -1,3 +1,4 @@
+from collections import Counter, defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -20,8 +21,26 @@ class TrendRanker:
         return min(matched / max(len(self.audience_keywords), 1), 1.0)
 
     def _novelty_score(self, related_ids: list[str]) -> float:
-        # More related ids => lower novelty. 0 related means maximum novelty.
         return max(0.0, 1.0 - min(len(related_ids) / 5.0, 1.0))
+
+    def _momentum_scores(self, items: list[NormalizedItem]) -> dict[str, float]:
+        if not items:
+            return {}
+
+        topic_counts = Counter(item.topic_hint for item in items)
+        topic_sources: dict[str, set[str]] = defaultdict(set)
+        for item in items:
+            topic_sources[item.topic_hint].add(item.source)
+
+        max_count = max(topic_counts.values())
+        max_sources = max(len(v) for v in topic_sources.values())
+
+        scores: dict[str, float] = {}
+        for topic_hint, count in topic_counts.items():
+            mention_ratio = count / max_count if max_count else 0.0
+            source_ratio = len(topic_sources[topic_hint]) / max_sources if max_sources else 0.0
+            scores[topic_hint] = 0.5 * mention_ratio + 0.5 * source_ratio
+        return scores
 
     def run(
         self,
@@ -29,9 +48,11 @@ class TrendRanker:
         related_lookup: Callable[[str], list[str]] | None = None,
     ) -> list[TrendCandidate]:
         candidates: list[TrendCandidate] = []
+        momentum_scores = self._momentum_scores(items)
+
         for item in items:
             recency = self._recency_score(item.published_at)
-            momentum = 0.6
+            momentum = momentum_scores.get(item.topic_hint, 0.0)
             base_text = f"{item.title}\n{item.summary}\n{item.topic_hint}"
             audience_fit = self._audience_fit(base_text)
             related_ids = related_lookup(base_text) if related_lookup else []

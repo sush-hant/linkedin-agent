@@ -34,6 +34,12 @@ class JsonFileStore(StoragePort):
         files = sorted(target_dir.glob("*.json"))
         return files[-1] if files else None
 
+    def _all_json(self, folder: str) -> list[Path]:
+        target_dir = self.root_dir / folder
+        if not target_dir.exists():
+            return []
+        return sorted(target_dir.glob("*.json"))
+
     def save_raw_items(self, items: list[SourceItem]) -> str:
         return self._write("raw", [item.model_dump() for item in items])
 
@@ -66,5 +72,17 @@ class JsonFileStore(StoragePort):
     def save_published_post(self, post: PublishedPost) -> str:
         return self._write("published", post.model_dump())
 
+    def list_published_posts(self) -> list[PublishedPost]:
+        rows: list[PublishedPost] = []
+        for fp in self._all_json("published"):
+            rows.append(PublishedPost.model_validate(json.loads(fp.read_text(encoding="utf-8"))))
+        return rows
+
     def save_feedback(self, feedback: FeedbackEntry) -> str:
         return self._write("metrics", feedback.model_dump())
+
+    def list_feedback_entries(self) -> list[FeedbackEntry]:
+        rows: list[FeedbackEntry] = []
+        for fp in self._all_json("metrics"):
+            rows.append(FeedbackEntry.model_validate(json.loads(fp.read_text(encoding="utf-8"))))
+        return rows

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from app.api.routes.evaluation import router as evaluation_router
 from app.api.routes.feedback import router as feedback_router
 from app.api.routes.health import router as health_router
 from app.api.routes.pipeline import router as pipeline_router
@@ -13,6 +14,7 @@ def create_app() -> FastAPI:
     app.include_router(pipeline_router)
     app.include_router(review_router)
     app.include_router(feedback_router)
+    app.include_router(evaluation_router)
     return app
 
 

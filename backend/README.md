@@ -1,4 +1,4 @@
-# Backend (Phase 1-10 baseline)
+# Backend (Phase 1-11 baseline)
 
 ## Run API locally
 ```bash
@@ -14,6 +14,7 @@ python run.py
 - `GET /review/images`
 - `POST /review/approve`
 - `POST /feedback/record`
+- `GET /evaluation/summary`
 
 ## Pipeline coverage
 - Phase 1: app scaffold + contracts + prompt registry
@@ -26,6 +27,7 @@ python run.py
 - Phase 8: Chroma adapter with deterministic embedding + query support
 - Phase 9: Retrieval-aware generation using vector related-topic context
 - Phase 10: Retrieval-aware ranking with novelty scoring from vector search
+- Phase 11: Evaluation harness summary for offline/online KPI tracking
 
 ## Run tests
 ```bash

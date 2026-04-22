@@ -74,3 +74,11 @@ class FeedbackEntry(BaseModel):
     quality: Literal["poor", "average", "good"]
     notes: str = ""
     recorded_at: datetime
+
+
+class EvaluationSummary(BaseModel):
+    total_published: int
+    total_feedback_entries: int
+    avg_quality_score: float
+    avg_engagement_rate: float
+    top_published_id: str | None = None

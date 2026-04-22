@@ -12,7 +12,9 @@
 - ✅ Chroma adapter baseline implemented (persistent collection, upsert, query, deterministic embeddings).
 - ✅ Retrieval-aware generation baseline implemented (related-topic context from vector search is injected into post generation).
 - ✅ Retrieval signals are now used in ranking (novelty-aware scoring) and generation context.
-- 🔜 Next step: add evaluation harness (offline scoring + online KPI tracking) and replace heuristic momentum with multi-source trend velocity.
+- ✅ Multi-source momentum + retrieval-aware novelty ranking are implemented.
+- ✅ Evaluation harness summary endpoint is implemented for KPI tracking.
+- 🔜 Next step: production hardening (auth, CI with real deps, robust retries, richer source coverage).
 
 ---
 

@@ -46,7 +46,15 @@ class StoragePort(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def list_published_posts(self) -> list[PublishedPost]:
+        raise NotImplementedError
+
+    @abstractmethod
     def save_feedback(self, feedback: FeedbackEntry) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_feedback_entries(self) -> list[FeedbackEntry]:
         raise NotImplementedError
 
 

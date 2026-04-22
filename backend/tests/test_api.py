@@ -59,6 +59,10 @@ class ApiTests(unittest.TestCase):
             self.assertEqual(feedback.status_code, 200)
             self.assertEqual(feedback.json()["status"], "ok")
 
+            summary = client.get("/evaluation/summary")
+            self.assertEqual(summary.status_code, 200)
+            self.assertIn("avg_engagement_rate", summary.json())
+
 
 if __name__ == "__main__":
     unittest.main()
