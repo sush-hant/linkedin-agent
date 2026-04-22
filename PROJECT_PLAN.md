@@ -9,7 +9,8 @@
 - ✅ Next.js review UI baseline implemented: run pipeline, review/edit, approve, feedback submit.
 - ✅ RSS source ingestion baseline implemented (with static source fallback).
 - ✅ OpenAI-capable generation baseline implemented (with deterministic fallback when key is absent).
-- 🔜 Next step: replace placeholder Chroma adapter with real vector upsert/query implementation.
+- ✅ Chroma adapter baseline implemented (persistent collection, upsert, query, deterministic embeddings).
+- 🔜 Next step: replace deterministic local embedding with model-quality embeddings and use retrieval in ranker/post generation.
 
 ---
 

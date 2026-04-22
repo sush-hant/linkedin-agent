@@ -55,6 +55,10 @@ class VectorStorePort(ABC):
     def upsert_topics(self, items: list[TrendCandidate]) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    def query_related(self, text: str, limit: int = 5) -> list[str]:
+        raise NotImplementedError
+
 
 class SourceClientPort(Protocol):
     def fetch(self) -> list[SourceItem]:

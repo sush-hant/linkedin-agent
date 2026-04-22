@@ -1,4 +1,4 @@
-# Backend (Phase 1-7 baseline)
+# Backend (Phase 1-8 baseline)
 
 ## Run API locally
 ```bash
@@ -23,6 +23,7 @@ python run.py
 - Phase 5: feedback capture endpoint + scoring hook service
 - Phase 6: RSS-based source ingestion (with static fallback for resilience)
 - Phase 7: OpenAI-backed post generation adapter (with graceful fallback)
+- Phase 8: Chroma adapter with deterministic embedding + query support
 
 ## Run tests
 ```bash
