@@ -13,7 +13,7 @@ This is the Phase 4/5 review UI implementation.
 ```bash
 cd frontend
 npm install
-NEXT_PUBLIC_API_BASE=http://localhost:8000 npm run dev
+NEXT_PUBLIC_API_BASE=http://localhost:8000 NEXT_PUBLIC_AGENT_API_KEY=dev-key npm run dev
 ```
 
 Ensure FastAPI backend is running at the same API base URL.

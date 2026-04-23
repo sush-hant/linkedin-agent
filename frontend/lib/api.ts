@@ -16,11 +16,16 @@ export type ImageDraft = {
 };
 
 const API = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
+const API_KEY = process.env.NEXT_PUBLIC_AGENT_API_KEY ?? "dev-key";
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API}${path}`, {
     ...init,
-    headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": API_KEY,
+      ...(init?.headers ?? {}),
+    },
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`API ${path} failed: ${res.status}`);

@@ -14,7 +14,8 @@
 - ✅ Retrieval signals are now used in ranking (novelty-aware scoring) and generation context.
 - ✅ Multi-source momentum + retrieval-aware novelty ranking are implemented.
 - ✅ Evaluation harness summary endpoint is implemented for KPI tracking.
-- 🔜 Next step: production hardening (auth, CI with real deps, robust retries, richer source coverage).
+- ✅ Production hardening (auth, retries, richer source coverage) is implemented.
+- 🔜 Next step: CI/CD and deployment hardening (non-skipped test pipeline, secrets management, infra rollout).
 
 ---
 

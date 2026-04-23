@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
+from time import sleep
 from urllib.request import urlopen
 from xml.etree import ElementTree as ET
 
@@ -13,6 +14,7 @@ class RSSSourceClient(SourceClientPort):
     feed_url: str
     source_name: str
     timeout_seconds: int = 10
+    max_retries: int = 3
 
     def _parse_datetime(self, raw: str | None) -> datetime:
         if not raw:
@@ -50,6 +52,16 @@ class RSSSourceClient(SourceClientPort):
         return rows
 
     def fetch(self) -> list[SourceItem]:
-        with urlopen(self.feed_url, timeout=self.timeout_seconds) as response:  # noqa: S310
-            payload = response.read()
-        return self._parse_feed(payload)
+        last_error: Exception | None = None
+        for attempt in range(self.max_retries):
+            try:
+                with urlopen(self.feed_url, timeout=self.timeout_seconds) as response:  # noqa: S310
+                    payload = response.read()
+                return self._parse_feed(payload)
+            except Exception as exc:
+                last_error = exc
+                if attempt < self.max_retries - 1:
+                    sleep(0.5 * (attempt + 1))
+        if last_error:
+            raise last_error
+        return []

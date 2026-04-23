@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 from dataclasses import dataclass
+from time import sleep
 from urllib import request
 
 from app.ports.interfaces import VectorStorePort
@@ -44,18 +45,30 @@ class ChromaVectorStore(VectorStorePort):
             "model": self.embedding_model,
             "input": text,
         }
-        req = request.Request(
-            url="https://api.openai.com/v1/embeddings",
-            data=json.dumps(payload).encode("utf-8"),
-            headers={
-                "Authorization": f"Bearer {self.openai_api_key}",
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
-        with request.urlopen(req, timeout=30) as resp:  # noqa: S310
-            body = json.loads(resp.read().decode("utf-8"))
-        return body["data"][0]["embedding"]
+
+        last_error: Exception | None = None
+        for attempt in range(3):
+            try:
+                req = request.Request(
+                    url="https://api.openai.com/v1/embeddings",
+                    data=json.dumps(payload).encode("utf-8"),
+                    headers={
+                        "Authorization": f"Bearer {self.openai_api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    method="POST",
+                )
+                with request.urlopen(req, timeout=30) as resp:  # noqa: S310
+                    body = json.loads(resp.read().decode("utf-8"))
+                return body["data"][0]["embedding"]
+            except Exception as exc:
+                last_error = exc
+                if attempt < 2:
+                    sleep(0.5 * (attempt + 1))
+
+        if last_error:
+            raise last_error
+        raise RuntimeError("Embedding generation failed")
 
     def _embed_text(self, text: str, dim: int = 64) -> list[float]:
         if self.openai_api_key:

@@ -1,4 +1,4 @@
-# Backend (Phase 1-11 baseline)
+# Backend (Phase 1-12 baseline)
 
 ## Run API locally
 ```bash
@@ -28,6 +28,7 @@ python run.py
 - Phase 9: Retrieval-aware generation using vector related-topic context
 - Phase 10: Retrieval-aware ranking with novelty scoring from vector search
 - Phase 11: Evaluation harness summary for offline/online KPI tracking
+- Phase 12: API key auth + rate limiting + retry hardening
 
 ## Run tests
 ```bash
@@ -48,3 +49,9 @@ python -m unittest discover -s tests -v
 - Without API key, pipeline uses deterministic fallback post drafting.
 
 - Optional `OPENAI_EMBEDDING_MODEL` controls Chroma embedding calls when API key is available.
+
+
+## Security & runtime hardening
+- Protected endpoints require `x-api-key` header (set via `AGENT_API_KEY`).
+- Set `REQUIRE_AUTH=false` to disable auth in local experiments.
+- In-memory rate limiting is enabled with `RATE_LIMIT_PER_MINUTE` (default 60).
